@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26127.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCC Eng Info", "TCC Eng Info.csproj", "{60AFA992-642A-4822-88EE-9A6787AF0B23}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Arduino", "Arduino", "{F0871906-7AC6-44BC-9901-DFE3FAB6050A}"
+	ProjectSection(SolutionItems) = preProject
+		..\DisplayLED\DisplayLED.ino = ..\DisplayLED\DisplayLED.ino
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UWP", "UWP", "{B72AA434-7821-4CEB-BB6F-7A8BA95A4264}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|ARM.ActiveCfg = Debug|ARM
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|ARM.Build.0 = Debug|ARM
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|ARM.Deploy.0 = Debug|ARM
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|x64.ActiveCfg = Debug|x64
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|x64.Build.0 = Debug|x64
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|x64.Deploy.0 = Debug|x64
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|x86.ActiveCfg = Debug|x86
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|x86.Build.0 = Debug|x86
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|x86.Deploy.0 = Debug|x86
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|ARM.ActiveCfg = Release|ARM
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|ARM.Build.0 = Release|ARM
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|ARM.Deploy.0 = Release|ARM
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|x64.ActiveCfg = Release|x64
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|x64.Build.0 = Release|x64
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|x64.Deploy.0 = Release|x64
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|x86.ActiveCfg = Release|x86
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|x86.Build.0 = Release|x86
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|x86.Deploy.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{60AFA992-642A-4822-88EE-9A6787AF0B23} = {B72AA434-7821-4CEB-BB6F-7A8BA95A4264}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 1
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://allantargino.visualstudio.com/
+		SccProjectUniqueName0 = TCC\u0020Eng\u0020Info.csproj
+		SccProjectTopLevelParentUniqueName0 = TCC\u0020Eng\u0020Info.sln
+		SccProjectName0 = .
+		SccAuxPath0 = https://allantargino.visualstudio.com
+		SccLocalPath0 = .
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+	EndGlobalSection
+EndGlobal

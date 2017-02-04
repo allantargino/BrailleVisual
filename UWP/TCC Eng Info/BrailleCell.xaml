@@ -1,0 +1,26 @@
+﻿<UserControl
+    x:Class="TCC_Eng_Info.BrailleCell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TCC_Eng_Info"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="160"
+    d:DesignWidth="120">
+    <Border x:Name="CellContainer"  BorderBrush="#FF000000" BorderThickness="1" CornerRadius="8" Height="140" Width="100" Margin="10">
+        <GridView x:Name="Cell" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" SelectedIndex="-1" SelectionMode="None" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <Ellipse
+                        Fill="{Binding Color}"
+                        Height= "30"
+                        Width="30"
+                        Margin="8,0,0,0"
+                        StrokeThickness="2"
+                        Stroke="Black"/>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+    </Border>
+</UserControl>
