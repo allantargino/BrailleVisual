@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Printing;
@@ -46,6 +47,9 @@ namespace TCC_Eng_Info
         PrintTask Task = null;
 
 
+        private string _text = string.Empty;
+
+
         private int Pages { get; set; }
 
         public string TextContent { get; set; }
@@ -53,9 +57,15 @@ namespace TCC_Eng_Info
         public ExportPage()
         {
             this.InitializeComponent();
+
             printmgr.PrintTaskRequested += Printmgr_PrintTaskRequested;
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            _text = ((StringBuilder)e.Parameter).ToString();
+            base.OnNavigatedTo(e);
+        }
 
 
         public ExportPage(string textContent)
@@ -121,7 +131,7 @@ namespace TCC_Eng_Info
 
             for (int i = 0; i < Pages; i++)
             {
-                var element = (UIElement) this.FindName($"Block{i}");
+                var element = (UIElement)this.FindName($"Block{i}");
                 printDoc.AddPage(element);
             }
 
@@ -146,12 +156,7 @@ namespace TCC_Eng_Info
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            //var lineCount = InitialBrailleText.ActualHeight / 150.0;
-            //int pagesCount = (int) Math.Ceiling(lineCount / 7.0);
-            //InitialBrailleText.Visibility = Visibility.Collapsed;
-
-            var text = "Lorem Ipsum is simply Lorem Ipsum is simpl  Lorem Ipsum is simpl dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
-            var chars = (double)text.Count();
+            var chars = (double)_text.Count();
             var lines = 7;
             var charsPerLine = 8;
             var charsPerPage = lines * charsPerLine;
@@ -159,16 +164,17 @@ namespace TCC_Eng_Info
 
             for (int i = 0; i < Pages; i++)
             {
-                TextBlock tb = new TextBlock();
-                tb.FontFamily = new FontFamily("../Assets/Fonts/Braille AOE Font.TTF#Braille AOE");
-                tb.FontSize = 100;
-                tb.TextWrapping = TextWrapping.WrapWholeWords;
-                tb.Margin = new Thickness(20);
-                tb.LineStackingStrategy = LineStackingStrategy.MaxHeight;
-                tb.LineHeight = 150;
-                tb.Name = $"Block{i}";
-                tb.Text = new string(text.Skip(i * charsPerPage).Take(charsPerPage).ToArray());
-
+                TextBlock tb = new TextBlock()
+                {
+                    FontFamily = new FontFamily("../Assets/Fonts/Braille AOE Font.TTF#Braille AOE"),
+                    FontSize = 100,
+                    TextWrapping = TextWrapping.WrapWholeWords,
+                    Margin = new Thickness(20),
+                    LineStackingStrategy = LineStackingStrategy.MaxHeight,
+                    LineHeight = 150,
+                    Name = $"Block{i}",
+                    Text = new string(_text.Skip(i * charsPerPage).Take(charsPerPage).ToArray())
+                };
                 BrailleContent.Children.Add(tb);
             }
         }

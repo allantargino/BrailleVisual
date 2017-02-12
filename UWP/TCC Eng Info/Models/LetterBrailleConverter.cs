@@ -1,4 +1,4 @@
-﻿namespace TCC_Eng_Info
+﻿namespace TCC_Eng_Info.Models
 {
     public static class LetterBrailleConverter
     {

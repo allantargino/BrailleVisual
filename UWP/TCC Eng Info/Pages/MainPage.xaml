@@ -33,8 +33,8 @@
             <TextBlock Grid.Column="0" Name="RecognitionResult" TextAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="20" />
             <Button Grid.Column="1" x:Name="RecognizeButton" Content="Reconhecer" Width="100"/>
             <Button Grid.Column="2" x:Name="ClearButton" Content="Apagar" Width="100"/>
-            <Button Grid.Column="3" x:Name="SentSerialButton" Content="Serial" Width="100"/>
-            <Button Grid.Column="4" x:Name="PDFButton" Content="PDF" Width="100"/>
+            <ToggleButton Grid.Column="3" x:Name="EnableSerialButton" Content="Serial" Width="100"/>
+            <Button Grid.Column="4" x:Name="ExportPDFButton" Content="Exportar" Width="100"/>
         </Grid>
         <StackPanel Grid.Row="3" Name="BraillePanel"  HorizontalAlignment="Left"  Orientation="Horizontal" Margin="10,0,10,0" />
     </Grid>
