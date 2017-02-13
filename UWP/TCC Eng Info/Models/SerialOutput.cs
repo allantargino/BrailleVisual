@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.SerialCommunication;
@@ -9,11 +7,19 @@ using Windows.Storage.Streams;
 
 namespace TCC_Eng_Info.Models
 {
+    /// <summary>
+    /// Representa um dispositivo com capacidade de receber mensagens de texto via porta Serial.
+    /// </summary>
     public class SerialOutput
     {
-        private SerialDevice serialPort = null;
-        private DataWriter dataWriteObject = null;
+        private SerialDevice _serialDevice = null;
+        private DataWriter _dataWriter = null;
 
+        /// <summary>
+        /// Construtor que abstraia a inicialização do device COM.
+        /// </summary>
+        /// <param name="comPort">Porta de comunicação no formato COM. Exemplo: COM1, COM3, COM4.</param>
+        /// <example>COM3</example>
         public SerialOutput(string comPort)
         {
             string qFilter = SerialDevice.GetDeviceSelector(comPort);
@@ -28,37 +34,44 @@ namespace TCC_Eng_Info.Models
                     await OpenPort(deviceId);
                 }
             }).Wait();
+
         }
 
+        /// <summary>
+        /// Abre a porta de comunicação serial com o dispositivo instanciado.
+        /// </summary>
+        /// <param name="deviceId">ID do device relativo ao selector obtido de uma porta COM</param>
+        /// <returns>Retorna a operação assíncrona.</returns>
         private async Task OpenPort(string deviceId)
         {
-            serialPort = await SerialDevice.FromIdAsync(deviceId);
+            _serialDevice = await SerialDevice.FromIdAsync(deviceId);
 
-            if (serialPort != null)
+            if (_serialDevice != null)
             {
-                serialPort.WriteTimeout = TimeSpan.FromMilliseconds(1000);
-                serialPort.ReadTimeout = TimeSpan.FromMilliseconds(1000);
-                serialPort.BaudRate = 9600;
-                serialPort.Parity = SerialParity.None;
-                serialPort.StopBits = SerialStopBitCount.One;
-                serialPort.DataBits = 8;
-                serialPort.Handshake = SerialHandshake.None;
+                _serialDevice.WriteTimeout = TimeSpan.FromMilliseconds(1000);
+                _serialDevice.ReadTimeout = TimeSpan.FromMilliseconds(1000);
+                _serialDevice.BaudRate = 9600;
+                _serialDevice.Parity = SerialParity.None;
+                _serialDevice.StopBits = SerialStopBitCount.One;
+                _serialDevice.DataBits = 8;
+                _serialDevice.Handshake = SerialHandshake.None;
             }
         }
 
-
-
+        /// <summary>
+        /// Envia um texto pela interface Serial.
+        /// </summary>
+        /// <param name="text">Texto a ser enviado para o dispositivo pela porta COM.</param>
+        /// <returns>Retorna a operação assíncrona.</returns>
         public async Task SendTextToDevice(string text)
         {
             try
             {
-                if (serialPort != null)
+                if (_serialDevice != null)
                 {
-                    dataWriteObject = new DataWriter(serialPort.OutputStream);
-
+                    _dataWriter = new DataWriter(_serialDevice.OutputStream);
                     await WriteAsync(text);
                 }
-                else { }
             }
             catch (Exception ex)
             {
@@ -66,29 +79,32 @@ namespace TCC_Eng_Info.Models
             }
             finally
             {
-                if (dataWriteObject != null)   // Cleanup once complete
+                //Limpa o buffer do DataWriter
+                if (_dataWriter != null) 
                 {
-                    dataWriteObject.DetachStream();
-                    dataWriteObject = null;
+                    _dataWriter.DetachStream();
+                    _dataWriter = null;
                 }
             }
         }
 
-        private async Task WriteAsync(string text2write)
+        /// <summary>
+        /// Escreve a mensagem no buffer do objeto de escrita.
+        /// </summary>
+        /// <param name="text">Texto a ser enviado para o dispositivo pela porta COM.</param>
+        /// <returns>Retorna a operação assíncrona.</returns>
+        private async Task WriteAsync(string text)
         {
             Task<UInt32> storeAsyncTask;
 
-            if (text2write.Length != 0)
+            if (text.Length != 0)
             {
-                dataWriteObject.WriteString(text2write);
-
-                storeAsyncTask = dataWriteObject.StoreAsync().AsTask();  // Create a task object
-
-                UInt32 bytesWritten = await storeAsyncTask;   // Launch the task and wait
-                if (bytesWritten > 0)
-                {
-                    //txtStatus.Text = bytesWritten + " bytes written at " + DateTime.Now.ToString(System.Globalization.CultureInfo.CurrentUICulture.DateTimeFormat.LongTimePattern);
-                }
+                _dataWriter.WriteString(text);
+                storeAsyncTask = _dataWriter.StoreAsync().AsTask(); 
+                UInt32 bytesWritten = await storeAsyncTask; 
+                //if (bytesWritten > 0)
+                //{
+                //}
             }
         }
     }

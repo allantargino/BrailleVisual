@@ -1,5 +1,8 @@
 ﻿namespace TCC_Eng_Info.Models
 {
+    /// <summary>
+    /// Encapsula a conversão de letras em forma de Char para os pontos Braille de uma cela.
+    /// </summary>
     public static class LetterBrailleConverter
     {
         private static readonly bool[] A = new bool[] { true, false, false, false, false, false };
@@ -38,6 +41,11 @@
 
         private static readonly bool[] Empty = new bool[] { false, false, false, false, false, false };
 
+        /// <summary>
+        /// Converte um char em um array com 6 coordenadas booleanas Braille.
+        /// </summary>
+        /// <param name="letter">Letra que será convertida em um array lógico Braille.</param>
+        /// <returns>Array de booleanos contendo coordenadas Braille.</returns>
         public static bool[] LetterToBraille(char letter)
         {
             switch (letter)

@@ -1,171 +1,166 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Graphics.Printing;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Printing;
 
-
 namespace TCC_Eng_Info
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Página de exportação de uma sessão de texto Braille.
     /// </summary>
     public sealed partial class ExportPage : Page
     {
-        ///  <summary> 
-        /// use PrintManage.GetForCurrentView () Gets a PrintManager objects
-        /// PrintManage Printer Manager is responsible for the arrangements for the print stream Windows applications
-        // You must call PrintManager.GetForCurrentView when using () method to return specific to the current window PrintManager
-        ///  </ summary> 
-        PrintManager printmgr = PrintManager.GetForCurrentView();
-
-        ///  <summary> 
-        /// PrintDocument print stream sent to the printer in a reusable objects
-        ///  </ summary> 
-        PrintDocument printDoc = null;
-
-        ///  <summary> 
-        /// RotateTransform is to rotate the print element, if the device is sideways of the need to rotate 90 °
-        ///  </ summary> 
-        RotateTransform rottrf = null;
-
-        ///  <summary> 
-        /// representation includes content to be printed as well as provide access to the description of how to print the contents of the information The printing operation
-        ///  </ summary> 
-        PrintTask Task = null;
-
+        PrintManager _printManager = PrintManager.GetForCurrentView();
+        PrintDocument _printDocument = null;
+        PrintTask _printTask = null;
 
         private string _text = string.Empty;
+        private int _pages = 0;
+        private string TextContent { get; set; }
 
-
-        private int Pages { get; set; }
-
-        public string TextContent { get; set; }
-
+        /// <summary>
+        /// Construtor da página de exportação de uma sessão.
+        /// </summary>
         public ExportPage()
         {
             this.InitializeComponent();
-
-            printmgr.PrintTaskRequested += Printmgr_PrintTaskRequested;
+            _printManager.PrintTaskRequested += Printmgr_PrintTaskRequested;
         }
-
+        
+        /// <summary>
+        /// Método que é disparado após o frame ser navegado até esta página.
+        /// </summary>
+        /// <param name="e">Encapsula o texto proveniente de uma sessão de captura de linguagem natural para Braille.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             _text = ((StringBuilder)e.Parameter).ToString();
             base.OnNavigatedTo(e);
         }
 
-
-        public ExportPage(string textContent)
-        {
-            this.InitializeComponent();
-            TextContent = textContent;
-        }
-
+        /// <summary>
+        /// Evento de clique do botão de Imprimir. Inicializa handlers de eventos e mostra a UI de impressão.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="e">Encapsulamento de parâmetros do evento.</param>
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (printDoc != null)
+            if (_printDocument != null)
             {
-                printDoc.GetPreviewPage -= OnGetPreviewPage;
-                printDoc.Paginate -= PrintDic_Paginate;
-                printDoc.AddPages -= PrintDic_AddPages;
+                _printDocument.GetPreviewPage -= OnGetPreviewPage;
+                _printDocument.Paginate -= PrintDic_Paginate;
+                _printDocument.AddPages -= PrintDic_AddPages;
             }
-            this.printDoc = new PrintDocument();
-            // subscribe preview event 
-            printDoc.GetPreviewPage += OnGetPreviewPage;
-            // print parameters occur Subscribe preview change the direction of events such as the document 
-            printDoc.Paginate += PrintDic_Paginate;
-            // add a page to handle events 
-            printDoc.AddPages += PrintDic_AddPages;
+            this._printDocument = new PrintDocument();
+            _printDocument.GetPreviewPage += OnGetPreviewPage;
+            _printDocument.Paginate += PrintDic_Paginate;
+            _printDocument.AddPages += PrintDic_AddPages;
 
-            // display the Print dialog box 
-            bool showPrint = await PrintManager.ShowPrintUIAsync();
+            await PrintManager.ShowPrintUIAsync();
         }
 
+        /// <summary>
+        /// Cria a tarefa de impressão após ser disparado pelo evento de PrintTaskRequest.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="args">Encapsula os argumentos para a impressão</param>
         private void Printmgr_PrintTaskRequested(PrintManager sender, PrintTaskRequestedEventArgs args)
         {
-            // Get PrintTaskRequest tasks associated with property from the Request Parameter in
-            // After creating the print content and tasks calling the Complete method for printing 
             var deferral = args.Request.GetDeferral();
-            // create a print task 
-            Task = args.Request.CreatePrintTask(" shopping information - Print single ", OnPrintTaskSourceRequested);
-            Task.Completed += PrintTask_Completed;
+            _printTask = args.Request.CreatePrintTask("Sessão de Braille Visual", OnPrintTaskSourceRequested);
+            _printTask.Completed += PrintTask_Completed;
             deferral.Complete();
         }
 
-        private void PrintTask_Completed(PrintTask Sender, PrintTaskCompletedEventArgs args)
+        /// <summary>
+        /// Ação a ser realizada após a tarefa de impressão estar finalizada.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="args">Encapsulamento de parâmetros do evento.</param>
+        private void PrintTask_Completed(PrintTask sender, PrintTaskCompletedEventArgs args)
         {
-            // print completed 
+            //throw new NotImplementedException();
         }
 
-
+        /// <summary>
+        /// Faz o handle do evento de impressão e indica que há uma fonte que irá imprimir.
+        /// </summary>
+        /// <param name="args">Encapsulamento de parâmetros do evento.</param>
         private async void OnPrintTaskSourceRequested(PrintTaskSourceRequestedArgs args)
         {
             var def = args.GetDeferral();
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
                 () =>
                 {
-                    // Set the print source 
-                    args.SetSource(printDoc?.DocumentSource);
+                    args.SetSource(_printDocument?.DocumentSource);
                 });
             def.Complete();
         }
 
-        // add the contents of the printed page 
-        private void PrintDic_AddPages(Object Sender, AddPagesEventArgs e)
+        /// <summary>
+        /// Adiciona os conteúdos das páginas que serão impressas. 
+        /// Uma página por TextBlock da view será impresso.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="e">Encapsulamento de parâmetros do evento.</param>
+        private void PrintDic_AddPages(Object sender, AddPagesEventArgs e)
         {
-            // add elements of a page to be printed 
-            //printDoc.AddPage(InitialBrailleText);
-
-            for (int i = 0; i < Pages; i++)
+            for (int i = 0; i < _pages; i++)
             {
                 var element = (UIElement)this.FindName($"Block{i}");
-                printDoc.AddPage(element);
+                _printDocument.AddPage(element);
             }
 
-            // completed to increase the printed page 
-            printDoc.AddPagesComplete();
+            _printDocument.AddPagesComplete();
         }
 
-        private void PrintDic_Paginate(Object Sender, PaginateEventArgs e)
+        /// <summary>
+        /// Seta a quantidade de páginas de preview que será mostrada na UI de impressão.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="e">Encapsulamento de parâmetros do evento.</param>
+        private void PrintDic_Paginate(Object sender, PaginateEventArgs e)
         {
-            PrintTaskOptions opt = Task.Options;
-
-            // set the preview page of the total number of pages 
-            printDoc.SetPreviewPageCount(1, PreviewPageCountType.Final);
+            //PrintTaskOptions opt = _printTask.Options;
+            _printDocument.SetPreviewPageCount(_pages, PreviewPageCountType.Final);
         }
 
-
-        private void OnGetPreviewPage(Object Sender, GetPreviewPageEventArgs e)
+        /// <summary>
+        /// Seta a página de preview que será mostrada na UI de impressão.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="e">Encapsulamento de parâmetros do evento.</param>
+        private void OnGetPreviewPage(Object sender, GetPreviewPageEventArgs e)
         {
-            // set to preview page 
-            printDoc.SetPreviewPage(e.PageNumber, BrailleContent);
+            _printDocument.SetPreviewPage(e.PageNumber, BrailleContent);
         }
 
+        /// <summary>
+        /// Após a página ser carregada, realiza-se um processo de quebra do texto em trechos que caibam em uma página.
+        /// Os parâmetros estão travados para contem 8 células Braille em uma linha e 7 linhas por página.
+        /// Para cada página, renderiza-se um TextBlock com o respectivo texto específico na View.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="e">Encapsulamento de parâmetros do evento.</param>
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             var chars = (double)_text.Count();
             var lines = 7;
             var charsPerLine = 8;
             var charsPerPage = lines * charsPerLine;
-            Pages = (int)Math.Ceiling(chars / charsPerPage);
+            _pages = (int)Math.Ceiling(chars / charsPerPage);
 
-            for (int i = 0; i < Pages; i++)
+            //Para cada página, renderiza-se um TextBlock na View.
+            for (int i = 0; i < _pages; i++)
             {
                 TextBlock tb = new TextBlock()
                 {
+                    //Utiliza-se a fonte Braille AOE presente na pasta de Assets para renderizar o PDF.
                     FontFamily = new FontFamily("../Assets/Fonts/Braille AOE Font.TTF#Braille AOE"),
                     FontSize = 100,
                     TextWrapping = TextWrapping.WrapWholeWords,

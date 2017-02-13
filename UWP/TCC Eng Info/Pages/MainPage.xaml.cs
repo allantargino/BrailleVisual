@@ -11,7 +11,7 @@ using System.Text;
 namespace TCC_Eng_Info
 {
     /// <summary>
-    /// Página principal do aplicativo tradutor
+    /// Página principal do aplicativo tradutor.
     /// </summary>
     public sealed partial class MainPage : Page
     {
@@ -20,18 +20,20 @@ namespace TCC_Eng_Info
         private SerialOutput _serialDevice = null;
         private StringBuilder _strBuilder = null;
 
+
+        /// <summary>
+        /// Construtor da página principal do aplicativo tradutor.
+        /// </summary>
         public MainPage()
         {
             this.InitializeComponent();
 
-            // Escolhe-se quais dispositivos deseja-se 
-            // permitir como entrada:
+            // Escolhe-se quais dispositivos deseja-se permitir como entrada.
             inkCanvas.InkPresenter.InputDeviceTypes =
-                Windows.UI.Core.CoreInputDeviceTypes.Mouse |
-                Windows.UI.Core.CoreInputDeviceTypes.Touch;
+                CoreInputDeviceTypes.Mouse |
+                CoreInputDeviceTypes.Touch;
 
-            // Inicializa-se os atributos de desenho
-            // do componente usado:
+            // Inicializa-se os atributos de desenho do componente usado.
             var attributes = new InkDrawingAttributes()
             {
                 Color = Colors.Blue,
@@ -40,41 +42,46 @@ namespace TCC_Eng_Info
             };
             inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(attributes);
 
-            // Inicializa-se os eventos de clique:
+            // Inicializa-se os eventos de clique.
             //RecognizeButton.Click += RecognizeButton_Click;
             ClearButton.Click += ClearButton_ClickAsync;
             EnableSerialButton.Click += EnableSerialButton_Click;
             ExportPDFButton.Click += ExportPDFButton_Click;
 
-            // Listen for stroke events on the InkPresenter to
-            // enable dynamic recognition.
-            // StrokesCollected is fired when the user stops inking by
-            // lifting their pen or finger, or releasing the mouse button.
-            inkCanvas.InkPresenter.StrokesCollected +=
-                inkCanvas_StrokesCollected;
-            // StrokeStarted is fired when ink input is first detected.
-            inkCanvas.InkPresenter.StrokeInput.StrokeStarted +=
-                inkCanvas_StrokeStarted;
+            // Evento disparado quando o usuário para de escrever na tela.
+            inkCanvas.InkPresenter.StrokesCollected += inkCanvas_StrokesCollected;
+            // Evento disparado quando o primeiro stroke é detectado.
+            inkCanvas.InkPresenter.StrokeInput.StrokeStarted += inkCanvas_StrokeStarted;
 
-            // Cria o container usado no reconhecimento manuscrito:
+            // Cria o container usado no reconhecimento manuscrito.
             _inkRecognizerContainer = new InkRecognizerContainer();
 
-            // Timer to manage dynamic recognition.
+            // Timer de controle que gerencia o reconhecimento dinâmico.
             _recogTimer = new DispatcherTimer()
             {
                 Interval = new TimeSpan(0, 0, 1)
             };
             _recogTimer.Tick += recoTimer_Tick;
 
+            // Estrutura para guardar o texto da sessão de captura da linguagem natural.
             _strBuilder = new StringBuilder();
-
         }
 
+        /// <summary>
+        /// Navega até a página de exportação de uma sessão de texto Braille.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="e">Encapsulamento de parâmetros do evento.</param>
         private void ExportPDFButton_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(ExportPage), _strBuilder);
         }
 
+        /// <summary>
+        /// Botão que limpa os strokes do Canvas, as células Braille e o texto presente no dispositivo conectado pela Serial.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="e">Encapsulamento de parâmetros do evento.</param>
         private async void ClearButton_ClickAsync(object sender, RoutedEventArgs e)
         {
             inkCanvas.InkPresenter.StrokeContainer.Clear();
@@ -84,8 +91,12 @@ namespace TCC_Eng_Info
             if (_serialDevice != null)
                 await _serialDevice.SendTextToDevice('\n'.ToString());
         }
-        
 
+        /// <summary>
+        /// Se o respectivo botão de toggle possuir o valor verdadeiro, os dados do reconhecimento são enviados pela porta Serial.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="e">Encapsulamento de parâmetros do evento.</param>
         private void EnableSerialButton_Click(object sender, RoutedEventArgs e)
         {
             if (EnableSerialButton.IsChecked == true)
@@ -98,31 +109,41 @@ namespace TCC_Eng_Info
             }
         }
 
-        // Handler for the timer tick event calls the recognition function.
+        /// <summary>
+        /// Handler para o evento de tick do timer de controle.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="e">Encapsulamento de parâmetros do evento.</param>
         private void recoTimer_Tick(object sender, object e)
         {
             Recognize_Tick();
         }
 
-        // Handler for the InkPresenter StrokeStarted event.
-        // If a new stroke starts before the next timer tick event,
-        // stop the timer as the new stroke is likely the continuation
-        // of a single handwriting entry.
+        /// <summary>
+        /// O evento é disparado quando o usuário inicia a escrita (usando o dedo ou o mouse na tela).
+        /// O timer de controle é parado para permitir que o usuário escreva de maneira contínua.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="args">Encapsulamento de parâmetros do evento.</param>
         private void inkCanvas_StrokeStarted(InkStrokeInput sender, PointerEventArgs args)
         {
             _recogTimer.Stop();
         }
 
-        // Handler for the InkPresenter StrokesCollected event.
-        // Start the recognition timer when the user stops inking by
-        // lifting their pen or finger, or releasing the mouse button.
-        // After one second of no ink input, recognition is initiated.
+        /// <summary>
+        /// O evento é disparado sempre que o usuário para de escrever (soltando o dedo ou o mouse da tela).
+        /// Após 1 segundo ou caso não haja nenhuma entrada do usuário, o reconhecimento será iniciado.
+        /// </summary>
+        /// <param name="sender">Objeto que disparou a tarefa.</param>
+        /// <param name="args">Encapsulamento de parâmetros do evento.</param>
         private void inkCanvas_StrokesCollected(InkPresenter sender, InkStrokesCollectedEventArgs args)
         {
             _recogTimer.Start();
         }
 
-        // Respond to timer Tick and initiate recognition.
+        /// <summary>
+        /// Quando o usuário para de escrever após 1 segundos, o reconhecimento se inicia.
+        /// </summary>
         private async void Recognize_Tick()
         {
             // Pega todos os strokes do InkCanvas:
@@ -183,6 +204,10 @@ namespace TCC_Eng_Info
             _recogTimer.Stop();
         }
 
+        /// <summary>
+        /// Adiciona um conjunto de células Braille à View correspondentes a um texto em português.
+        /// </summary>
+        /// <param name="text">Texto a ser convertido para Braille</param>
         private void AddBrailleCells(string text)
         {
             BraillePanel.Children.Clear();
