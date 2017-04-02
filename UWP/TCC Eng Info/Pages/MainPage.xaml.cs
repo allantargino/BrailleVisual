@@ -7,6 +7,9 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using TCC_Eng_Info.Models;
 using System.Text;
+using Windows.Foundation;
+using System.Linq;
+using Windows.UI.Xaml.Media;
 
 namespace TCC_Eng_Info
 {
@@ -86,6 +89,11 @@ namespace TCC_Eng_Info
         {
             inkCanvas.InkPresenter.StrokeContainer.Clear();
             BraillePanel.Children.Clear();
+            var tbs = inkGrid.Children.OfType<TextBlock>().ToList();
+            foreach (var tb in tbs)
+            {
+                inkGrid.Children.Remove(tb);
+            }
             RecognitionResult.Text = string.Empty;
 
             if (_serialDevice != null)
@@ -152,6 +160,8 @@ namespace TCC_Eng_Info
             // Garante que ao menos um stroke está presente:
             if (currentStrokes.Count > 0)
             {
+                var positions = GetWordsPositions(currentStrokes, 30);
+
                 if (!(_inkRecognizerContainer == null))
                 {
                     // Reconhece todos os strokes presentes no canvas.
@@ -162,6 +172,7 @@ namespace TCC_Eng_Info
 
                     if (recognitionResults.Count > 0)
                     {
+                        int i = 0;
                         string text = string.Empty;
                         foreach (var result in recognitionResults)
                         {
@@ -169,6 +180,20 @@ namespace TCC_Eng_Info
                             IReadOnlyList<string> candidates = result.GetTextCandidates();
                             // Admite-se o primeiro de cada um como sendo o correto:
                             text += candidates[0] + " ";
+
+                            TextBlock tb = new TextBlock()
+                            {
+                                //Utiliza-se a fonte Braille AOE presente na pasta de Assets para renderizar o PDF.
+                                FontFamily = new FontFamily("../Assets/Fonts/Braille AOE Font.TTF#Braille AOE"),
+                                FontSize = 50,
+                                Name = $"Block{i}",
+                                Text = candidates[0].ToString().ToLower()
+                            };
+
+                            //Adiciona as celas Braille abaixo de cada palavra.
+                            inkGrid.Children.Add(tb);
+                            PlaceText(tb, positions[i]);
+                            i++;
                         }
                         // Mostra o resultado do reconhecimento:
                         RecognitionResult.Text = "Resultado do reconhecimento: " + text;
@@ -202,6 +227,115 @@ namespace TCC_Eng_Info
 
             // Para o timer e aguarda algum stroke ser desenhado na tela novamente.
             _recogTimer.Stop();
+        }
+
+        /// <summary>
+        /// Posiciona o texto em baixo do conjunto correto de strokes
+        /// </summary>
+        private void PlaceText(TextBlock tb, Thickness position)
+        {
+            tb.Margin = position;
+        }
+
+        /// <summary>
+        /// Obtem as posições que as palavras Braille serão posicionadas no Ink.
+        /// </summary>
+        /// <param name="strokes">Conjunto de strokes pertencentes a de um Ink usado em reconhecimento de escrita natural.</param>
+        /// <param name="marginTop">Margem superior a ser adicionada à posição.</param>
+        /// <returns></returns>
+        private List<Thickness> GetWordsPositions(IReadOnlyList<InkStroke> strokes, double marginTop)
+        {
+            var positions = new List<Thickness>
+            {
+                getThickness(strokes[0], marginTop)
+            };
+
+            var filter = new MedianFilter(3);
+            var diffs = GetDiffs(strokes);
+            var widthMed = filter.Filter(diffs).Max();
+
+            Rect lastMaxStroke;
+            bool control = false;
+            for (int i = 1; i < strokes.Count; i++)
+            {
+                var rect1 = strokes[i - 1].BoundingRect;
+                var rect2 = strokes[i].BoundingRect;
+                rect1.Intersect(rect2);
+                if (rect1.IsEmpty)
+                {
+                    var diff = strokes[i].BoundingRect.Left - strokes[i - 1].BoundingRect.Left;
+                    if (diff > widthMed)
+                    {
+                        positions.Add(getThickness(strokes[i], marginTop));
+                    }
+                }
+                else
+                {
+
+                }
+            }
+            return positions;
+        }
+
+        /// <summary>
+        /// Função utilizada para pegar a diferença entre letras adjacentes
+        /// </summary>
+        /// <param name="strokes">Conjunto de strokes pertencentes a de um Ink usado em reconhecimento de escrita natural.</param>
+        /// <returns></returns>
+        private List<double> GetDiffs(IReadOnlyList<InkStroke> strokes)
+        {
+            var diffs = new List<double>();
+
+            for (int i = 1; i < strokes.Count; i++)
+            {
+                var rect1 = strokes[i - 1].BoundingRect;
+                var rect2 = strokes[i].BoundingRect;
+                rect1.Intersect(rect2);
+                if (rect1.IsEmpty)
+                {
+                    diffs.Add(strokes[i].BoundingRect.Left - strokes[i - 1].BoundingRect.Left);
+                }
+            }
+
+            return diffs;
+        }
+
+        /// <summary>
+        /// Função utilizada somente no estudo estatistico de distância entre palavras.
+        /// </summary>
+        /// <param name="strokes">Conjunto de strokes pertencentes a de um Ink usado em reconhecimento de escrita natural.</param>
+        /// <returns></returns>
+        private string GetWordsSpaces(IReadOnlyList<InkStroke> strokes)
+        {
+            var positions = "";
+
+            for (int i = 1; i < strokes.Count; i++)
+            {
+                var rect1 = strokes[i - 1].BoundingRect;
+                var rect2 = strokes[i].BoundingRect;
+                rect1.Intersect(rect2);
+                if (rect1.IsEmpty)
+                {
+                    var diff = strokes[i].BoundingRect.Left - strokes[i - 1].BoundingRect.Left;
+                    positions += diff + ",";
+                }
+            }
+            return positions;
+        }
+
+        /// <summary>
+        /// Extrai a posição mais abaixo e a esquerda de um stroke.
+        /// </summary>
+        /// <param name="stroke">Risco a ser analisado.</param>
+        /// <param name="marginTop">Margem superior a ser adicionada à posição.</param>
+        /// <returns></returns>
+        private Thickness getThickness(InkStroke stroke, double marginTop)
+        {
+            var left = stroke.BoundingRect.Left;
+            var top = stroke.BoundingRect.Top;
+            var height = stroke.BoundingRect.Height;
+
+            return new Thickness(left, top + height + marginTop, 0, 0);
         }
 
         /// <summary>

@@ -20,7 +20,9 @@
                    Margin="10,0,0,0" 
                        HorizontalAlignment="Center"/>
         <Border Grid.Row="1" BorderBrush="#FF000000" BorderThickness="2" Margin="20">
-            <InkCanvas Name="inkCanvas" />
+            <Grid Name="inkGrid">
+                <InkCanvas Name="inkCanvas" />
+            </Grid>
         </Border>
         <Grid  Grid.Row="2" BorderBrush="#FF000000" BorderThickness="2" Margin="20,0,20,0">
             <Grid.ColumnDefinitions>

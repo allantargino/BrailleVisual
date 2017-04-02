@@ -12,16 +12,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Arduino", "Arduino", "{F087
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UWP", "UWP", "{B72AA434-7821-4CEB-BB6F-7A8BA95A4264}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedianFilter", "..\MedianFilter\MedianFilter.csproj", "{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|ARM = Release|ARM
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|ARM.ActiveCfg = Debug|ARM
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|ARM.Build.0 = Debug|ARM
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -31,6 +36,7 @@ Global
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|x86.ActiveCfg = Debug|x86
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|x86.Build.0 = Debug|x86
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Debug|x86.Deploy.0 = Debug|x86
+		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|Any CPU.ActiveCfg = Release|x86
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|ARM.ActiveCfg = Release|ARM
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|ARM.Build.0 = Release|ARM
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|ARM.Deploy.0 = Release|ARM
@@ -40,22 +46,28 @@ Global
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|x86.ActiveCfg = Release|x86
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|x86.Build.0 = Release|x86
 		{60AFA992-642A-4822-88EE-9A6787AF0B23}.Release|x86.Deploy.0 = Release|x86
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Debug|ARM.Build.0 = Debug|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Debug|x64.Build.0 = Debug|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Debug|x86.Build.0 = Debug|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Release|ARM.ActiveCfg = Release|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Release|ARM.Build.0 = Release|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Release|x64.ActiveCfg = Release|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Release|x64.Build.0 = Release|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Release|x86.ActiveCfg = Release|Any CPU
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{60AFA992-642A-4822-88EE-9A6787AF0B23} = {B72AA434-7821-4CEB-BB6F-7A8BA95A4264}
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 1
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://allantargino.visualstudio.com/
-		SccProjectUniqueName0 = TCC\u0020Eng\u0020Info.csproj
-		SccProjectTopLevelParentUniqueName0 = TCC\u0020Eng\u0020Info.sln
-		SccProjectName0 = .
-		SccAuxPath0 = https://allantargino.visualstudio.com
-		SccLocalPath0 = .
-		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		{09ED5F57-634D-4CF1-8ECD-2FFB6F976847} = {B72AA434-7821-4CEB-BB6F-7A8BA95A4264}
 	EndGlobalSection
 EndGlobal
